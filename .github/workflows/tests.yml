@@ -1,0 +1,21 @@
+# Автоматичні тести: GitHub запускає їх після кожної зміни на Windows і Linux.
+# Результат видно на значку «Тести» вгорі сторінки програми.
+name: Тести
+
+on: [push, pull_request]
+
+jobs:
+  tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ["3.10", "3.13"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      # Тестам потрібна лише логіка (core), тож вікно й інші бібліотеки не встановлюємо
+      - run: pip install "cryptography>=42"
+      - run: python -m unittest -v
